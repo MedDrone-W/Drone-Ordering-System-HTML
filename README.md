@@ -43,7 +43,7 @@ Controlled medicines are not intended to be delivered by drone. The map, medicin
 
 ## Links
 
-- [Live website](https://drfrostij.github.io/Drone-Ordering-System-HTML/)
+- [Live website](https://meddrone-w.github.io/Drone-Ordering-System-HTML/)
 - [Project repository](https://github.com/MedDrone-W/Drone-Ordering-System-HTML)
 
 ## Tutorials and references
