@@ -1,0 +1,153 @@
+<!DOCTYPE html> <!-- lets users know it's HTML -->
+
+<html> <!-- contains all the HTML code between the opening and closing tags (HTML) -->
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arasaka Biomedical</title> <!-- Sets the title of the webpage that appears in the browser tab -->
+    <link rel="icon" type="image/png" href="images/computer-retro.png"> <!-- Small icon shown in the browser tab, next to the title -->
+    <link rel="stylesheet" href="index.css">
+    <style>
+        #map,
+        gmp-map {
+            display: block;
+            width: 100%;
+            min-height: 360px;
+        }
+
+        gmp-map {
+            height: 360px;
+        }
+    </style>
+    <script type="module" src="./index.js"></script> <!-- https://developers.google.com/maps/documentation/javascript/demo-key -->
+    <script
+        async
+        src="https://maps.googleapis.com/maps/api/js?loading=async&key=AIzaSyDxoWR785vhV4YMVgdGBkm2T6pcxJuhQyE&libraries=maps,marker"></script>
+</head>
+
+<body> <!-- Contains the content of the webpage that is visible to users -->
+    <header>
+        <h1>Arasaka Biomedical</h1> <!-- Main heading of the webpage -->    <!-- h1 sets the largest heading size with num decrease = decrease text size -->
+        <p>Arasaka Biomedical is a website for ordering prescription medicines to be delivered by drone. Users sign up and log in, upload their prescriptions, and get texts when their delivery is on its way and when it arrives. A map shows the drone’s estimated arrival time using Google Maps and live drone data, and an AI assistant helps users with questions.</p> <!-- A paragraph of text --> <!-- p = paragraph -->
+    </header>
+
+    <!-- A horizontal line to separate content -->
+    <nav>
+        <a href="https://github.com/drfrostij/Drone-Ordering-System-HTML-and-python">Visit The GitHub Page</a> <!-- A hyperlink to another website -->
+        <a href="page2.html">Visit Page 2</a> <!-- A hyperlink to another website of mine -->
+    </nav>
+
+    <main>
+        <aside>
+            <h2>Medicine type</h2>
+            <div id="floating-panel">                                           <!-- https://github.com/googlemaps/js-samples/tree/main/samples/directions-panel-->
+                <strong>Choose a category:</strong>                                   <!-- Above used to make this code-->
+                <select id="medicine-type">
+                    <optgroup label="No prescription needed">
+                        <option value="pain-relief">Pain and fever relief</option>
+                        <option value="allergy">Allergy and hay fever</option>
+                        <option value="cold-flu">Cold and flu</option>
+                        <option value="stomach">Heartburn and stomach</option>
+                        <option value="skin">Skin care</option>
+                        <option value="eye-ear">Eye and ear care</option>
+                        <option value="vitamins">Vitamins and supplements</option>
+                    </optgroup>
+                    <optgroup label="Prescription needed">
+                        <option value="antibiotics">Antibiotics</option>
+                        <option value="blood-pressure">Blood pressure</option>
+                        <option value="asthma">Asthma and inhalers</option>
+                        <option value="diabetes">Diabetes</option>
+                    </optgroup>
+                </select>
+                <button type="button" id="add-to-order">Add to order</button>
+            </div>
+            <br>
+            <form id="nhs-id-form" novalidate>
+                <label for="NHSID">NHS ID</label>                                                           <!-- https://www.youtube.com/watch?v=JeXqaKeJSRI&list=PLZPZq0r_RZOO1zkgO4bIdfuLpizCeHYKv&index=5-->
+                <input id="NHSID" name="nhsId" type="text" autocomplete="off" required> 
+                <br>
+                <br>
+                <button id="NHSIDsubmit" type="submit">Submit</button>
+                <p id="nhs-id-status" role="status" aria-live="polite"></p>
+            </form>
+        </aside>
+
+        <section>
+            <h2>Delivery map</h2>
+            <div id="map">
+                <gmp-map
+                    center="41.027748173921374, -92.41852445367961"
+                    zoom="13"
+                    map-id="DEMO_MAP_ID">
+                    <gmp-advanced-marker
+                        position="41.027748173921374, -92.41852445367961"
+                        title="Ottumwa, IA"></gmp-advanced-marker>
+                </gmp-map>
+            </div>
+        </section>
+
+        <article id="sidebar">
+            <h2 id="type-title">Basket</h2>
+            <p id="type-examples"></p>
+            <p id="type-rx"></p>
+            <p id="type-note"></p>
+            <a id="upload-link" href="prescriptions/upload" hidden>Upload your prescription</a>
+            <a href="https://www.example.com">Visit Example.com</a> <!-- A hyperlink to another website -->
+
+            <img src="images/computer-retro.png" alt="Retro computer icon">
+        </article>
+    </main>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+    <!-- A line break to separate content -->
+    <footer>
+        <p>Controlled medicines are never delivered by drone. Collect them from the pharmacy.</p>
+    </footer>
+
+    <footer>
+        <p>© 2026 Arasaka Biomedical. All rights reserved. Created by Arasaka Biomedical.</p>
+    </footer>
+
+    <!-- Everything visible on the page goes inside body -->
+
+<script>
+  // Placeholder coordinates: replace with the real pharmacy and home positions
+  const PHARMACY = { lat: 51.5074, lng: -0.1278 };                       <!-- Starting point -->               
+  const HOME = { lat: 51.5235, lng: -0.1585 };                           <!-- End point for drone -->
+
+  const mapElement = document.querySelector('gmp-map');
+
+  // The Google Map inside gmp-map is created a moment after the page loads,
+  // so check every 100 ms until it exists
+  const check = setInterval(() => {
+    const map = mapElement.innerMap;
+    if (!map) return;
+    clearInterval(check);
+
+    // Draw the line from the pharmacy to home.
+    // geodesic: true follows the shortest path over the Earth's surface,
+    // which matches a drone flying a direct route.
+    new google.maps.Polyline({
+      path: [PHARMACY, HOME],
+      geodesic: true,
+      strokeColor: '#FF6A2B',
+      strokeOpacity: 1,
+      strokeWeight: 4,
+      map: map
+    });
+
+    // Zoom so both points are visible, with 60px of padding
+    const bounds = new google.maps.LatLngBounds(PHARMACY);
+    bounds.extend(HOME);
+    map.fitBounds(bounds, 60);
+  }, 100);
+</script>
+</body>
+</html>
